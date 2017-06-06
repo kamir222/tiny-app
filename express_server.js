@@ -48,6 +48,8 @@ app.get('/urls/:id', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+//  a function that produces a string of 6 random alphanumeric characters
 function generateRandomString() {
   var randomString = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
