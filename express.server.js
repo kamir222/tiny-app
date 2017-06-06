@@ -1,3 +1,4 @@
+"use strict";
 const express = require('express');
 const app = express();
 const PORT  = process.env.PORT || 8080; //if there is preconfigured port choose that, otherwise choose 8080
@@ -13,14 +14,15 @@ let urlDatabase = {
 app.get('/', (req, res) => {
   res.end('Hello!');
 })
-app.get('/Hello', function(req, res){
-  res.end('hello word!');
-})
 app.get('/url.json', (req, res) => {
     res.json(urlDatabase);
 })
 app.get('/greetings', (req, res) => {
   res.end('<html><body>Hello <b>World</b></body></html>\n');
+})
+app.get('/urls', (req, res) => {
+  let templateVars = {urls: urlDatabase};
+  res.render("urls_index", templateVars); 
 })
 
 app.listen(PORT, () => {
