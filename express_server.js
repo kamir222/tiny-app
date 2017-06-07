@@ -38,8 +38,6 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = longURL;
   console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
-  // add to urlDatabase
-  //res.send("Ok");
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -60,6 +58,23 @@ app.get('/urls/:id', (req, res) => {
   res.render("urls_show", templateVars);
 })
 
+app.post('/urls/:id/delete', (req, res) => {
+  // find url in database
+  let urlId = req.params.id;
+  let fullUrl = urlDatabase[urlId];
+  let url = fullUrl;
+
+  // if does not exist return a 404
+   if (!url) {
+     res.status(404).send('URL not found.');
+     return;
+   }
+  // remove donut from database
+  delete urlDatabase[urlId];
+
+  // redirect to home
+  res.redirect('/urls');
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
