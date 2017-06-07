@@ -10,14 +10,12 @@
     <% for (key in urls ) { %>
       <form method="POST" action="/urls/<%= key %>/delete">
         <li><%= key %> <%= urls[key] %>
-            <button type="submit">Delete</button>
+          <a href="/urls/<%= key %>">edit</a>
+          <button type="submit">Delete</button>
         </li>
       </form>
     <% } %>
     </ul>
     <a href="#">link for shortening a new URL</a>
-    <h2>Delete</h2>
-
-
 </body>
 </html>
