@@ -24,7 +24,10 @@ app.get('/greetings', (req, res) => {
   res.end('<html><body>Hello <b>World</b></body></html>\n');
 })
 app.get('/urls', (req, res) => {
-  let templateVars = {urls: urlDatabase};
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"],
+  };
   res.render("urls_index", templateVars);
 })
 
@@ -68,7 +71,11 @@ app.get('/urls/:id', (req, res) => {
   //console.log('/urls/:id', req.params.id); //checking which endpoint it hits first
   let urlId = req.params.id;
   let fullUrl = urlDatabase[urlId];
-  let templateVars = { shortURL: urlId, longURL: fullUrl };
+  let templateVars = {
+      shortURL: urlId,
+      longURL: fullUrl,
+      username: req.cookies["username"],
+    };
   res.render("urls_show", templateVars);
 })
 
