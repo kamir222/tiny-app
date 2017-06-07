@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>TinyApp</title>
+<title>TinyApp</title>
 </head>
 <body>
   <%- include('partials/_header') %>
-    <!-- Add your EJS code here -->
-    <ul>
+  <ul>
     <% for (key in urls ) { %>
-      <form method="POST" action="/urls/<%= key %>/delete">
-        <li><%= key %> <%= urls[key] %>
-          <a href="/urls/<%= key %>">edit</a>
-          <button type="submit">Delete</button>
-        </li>
-      </form>
+    <form method="POST" action="/urls/<%= key %>/delete">
+      <li><%= key %> <%= urls[key] %>
+        <a href="/urls/<%= key %>">edit</a>
+        <button type="submit">Delete</button>
+      </li>
+    </form>
     <% } %>
-    </ul>
-    <a href="urls/new">link for shortening a new URL</a>
+  </ul>
+  <a href="urls/new">link for shortening a new URL</a>
 </body>
 </html>

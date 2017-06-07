@@ -14,6 +14,17 @@ let urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//  a function that produces a string of 6 random alphanumeric characters
+function generateRandomString () {
+  var randomString = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for(var i = 0; i < 6; i++)
+      randomString += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return randomString;
+}
+
 app.get('/', (req, res) => {
   res.end('Hello!');
 })
@@ -36,7 +47,6 @@ app.get("/urls/new", (req, res) => {
     username: req.cookies["username"],
   };
   res.render("urls_new", templateVars);
-  console.log("/urls/new");
 });
 
 app.post("/urls", (req, res) => {
@@ -48,15 +58,8 @@ app.post("/urls", (req, res) => {
 });
 
 app.post('/login', function (req, res) {
-  //console.log(req.body.username);
   //set cookie
   res.cookie('username', req.body.username);
-  // Cookies that have not been signed
-
-  //console.log('Cookies: ', req.cookies)
-
-  // Cookies that have been signed
-  //console.log('Signed Cookies: ', req.signedCookies)
   res.redirect(`/urls`);
 })
 
@@ -77,7 +80,6 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get('/urls/:id', (req, res) => {
-  //console.log('/urls/:id', req.params.id); //checking which endpoint it hits first
   let urlId = req.params.id;
   let fullUrl = urlDatabase[urlId];
   let templateVars = {
@@ -92,7 +94,6 @@ app.post('/urls/:id', (req, res) => {
   // find url in database
   let urlId = req.params.id;
   let fullUrl = urlDatabase[urlId];
-
   let url = fullUrl;
 
   // if does not exist return a 404
@@ -107,7 +108,6 @@ app.post('/urls/:id', (req, res) => {
   if (fullUrl !== newUrl) {
     urlDatabase[urlId] = newUrl;
   }
-
   res.redirect(`/urls/${urlId}`);
 })
 
@@ -117,32 +117,18 @@ app.post('/urls/:id/delete', (req, res) => {
   let fullUrl = urlDatabase[urlId];
   let url = fullUrl;
 
-  // if does not exist return a 404
+  // if url doesn'texist return a 404
    if (!url) {
      res.status(404).send('URL not found.');
      return;
    }
-  // remove donut from database
+
+  // remove url from database
   delete urlDatabase[urlId];
 
-  // redirect to home
   res.redirect('/urls');
 })
-
-
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-//  a function that produces a string of 6 random alphanumeric characters
-function generateRandomString() {
-  var randomString = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for( var i=0; i < 6; i++ )
-      randomString += possible.charAt(Math.floor(Math.random() * possible.length));
-
-  return randomString;
-}
