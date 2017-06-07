@@ -36,7 +36,6 @@ app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   // add shortURL as key and longURL as value
   urlDatabase[shortURL] = longURL;
-  console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -56,6 +55,29 @@ app.get('/urls/:id', (req, res) => {
   let fullUrl = urlDatabase[urlId];
   let templateVars = { shortURL: urlId, longURL: fullUrl };
   res.render("urls_show", templateVars);
+})
+
+app.post('/urls/:id', (req, res) => {
+  // find url in database
+  let urlId = req.params.id;
+  let fullUrl = urlDatabase[urlId];
+
+  let url = fullUrl;
+
+  // if does not exist return a 404
+   if (!url) {
+     res.status(404).send('URL not found.');
+     return;
+   }
+
+  // update name on url
+  let newUrl = req.body.url;
+
+  if (fullUrl !== newUrl) {
+    urlDatabase[urlId] = newUrl;
+  }
+
+  res.redirect(`/urls/${urlId}`);
 })
 
 app.post('/urls/:id/delete', (req, res) => {
