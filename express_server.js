@@ -1,11 +1,13 @@
 "use strict";
 const express = require('express');
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser')
 const app = express();
 const PORT  = process.env.PORT || 8080; //if there is preconfigured port choose that, otherwise choose 8080
 
 app.set('view engine', 'ejs') // tells express to use ejs as templating engine
 app.use(bodyParser.urlencoded({extended: true})); // turning data into object (attaches form data to req.body)
+app.use(cookieParser())
 
 let urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
