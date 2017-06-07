@@ -41,6 +41,19 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+app.post('/login', function (req, res) {
+  //console.log(req.body.username);
+  //set cookie
+  res.cookie('username', req.body.username);
+  // Cookies that have not been signed
+
+  //console.log('Cookies: ', req.cookies)
+
+  // Cookies that have been signed
+  //console.log('Signed Cookies: ', req.signedCookies)
+  res.redirect(`/urls`);
+})
+
 app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = urlDatabase[shortURL];
@@ -99,6 +112,9 @@ app.post('/urls/:id/delete', (req, res) => {
   // redirect to home
   res.redirect('/urls');
 })
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
