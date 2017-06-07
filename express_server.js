@@ -32,7 +32,10 @@ app.get('/urls', (req, res) => {
 })
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"],
+  };
+  res.render("urls_new", templateVars);
   console.log("/urls/new");
 });
 
@@ -54,6 +57,12 @@ app.post('/login', function (req, res) {
 
   // Cookies that have been signed
   //console.log('Signed Cookies: ', req.signedCookies)
+  res.redirect(`/urls`);
+})
+
+app.post('/logout', function (req, res) {
+  //clear username
+  res.clearCookie('username');
   res.redirect(`/urls`);
 })
 
