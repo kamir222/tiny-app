@@ -31,15 +31,22 @@ app.get('/', (req, res) => {
 app.get('/url.json', (req, res) => {
     res.json(urlDatabase);
 })
-app.get('/greetings', (req, res) => {
-  res.end('<html><body>Hello <b>World</b></body></html>\n');
-})
+
+
+
 app.get('/urls', (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     username: req.cookies["username"],
   };
   res.render("urls_index", templateVars);
+})
+
+app.get('/urls/register', (req, res) => {
+  let templateVars = {
+    username: req.cookies["username"],
+  };
+  res.render("urls_form", templateVars);
 })
 
 app.get("/urls/new", (req, res) => {
