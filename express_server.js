@@ -32,8 +32,24 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("Ok");
+  let longURL = req.body.longURL;
+  let shortURL = generateRandomString();
+  // add shortURL as key and longURL as value
+  urlDatabase[shortURL] = longURL;
+  console.log(urlDatabase);
+  res.redirect(`/urls/${shortURL}`);
+  // add to urlDatabase
+  //res.send("Ok");
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  let shortURL = req.params.shortURL;
+  let longURL = urlDatabase[shortURL];
+  if (longURL === undefined) {
+    res.send(`non-existent url: ${shortURL}`);
+  } else {
+    res.redirect(longURL);
+  }
 });
 
 app.get('/urls/:id', (req, res) => {
