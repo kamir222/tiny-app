@@ -125,6 +125,7 @@ app.post('/login', function (req, res) {
   for (let user in users ) {
     if (req.body.email === users[user].email &&
         req.body.password === users[user].password) {
+            //send cookie
           res.cookie('userID', user);
           res.redirect(`/urls`);
     }
@@ -133,22 +134,12 @@ app.post('/login', function (req, res) {
     }
   }
 
-  //If a user with that e-mail cannot be found
-    //return a response with a 403 status code
-  //If a user with that e-mail address is located, AND
-  //if the password given in the form matches existing user's password
-      //set the user_id cookie with the matching user's random ID
-      //then redirect to /
-  //else it does not match,
-    //return a response with a 403 status code.
-
-  //send cookie
 })
 
 //LOGOUT
 app.post('/logout', function (req, res) {
   //clear username
-  res.clearCookie('username');
+  res.clearCookie('userID');
   res.redirect(`/urls`);
 })
 
