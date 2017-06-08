@@ -46,6 +46,7 @@ app.get('/url.json', (req, res) => {
     res.json(urlDatabase);
 })
 
+//INDEX PAGE
 app.get('/urls', (req, res) => {
   let templateVars = {
     urls: urlDatabase,
@@ -57,6 +58,7 @@ app.get('/urls', (req, res) => {
   res.render("urls_index", templateVars);
 })
 
+//REGISTER FORM
 app.get('/urls/register', (req, res) => {
   let templateVars = {
     //username: req.cookies["username"],
@@ -64,7 +66,7 @@ app.get('/urls/register', (req, res) => {
   };
   res.render("urls_form", templateVars);
 })
-//IM HERE!!!!
+
 app.post('/urls/register', (req, res) => {
   // generate a random user ID
   let userID = generateRandomString();
@@ -91,6 +93,7 @@ app.post('/urls/register', (req, res) => {
   res.redirect(`/urls`);
 })
 
+//NEW URL MAKER
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     //username: req.cookies["username"],
@@ -99,6 +102,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
+//SHORT URL GENERATOR
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
@@ -107,18 +111,48 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.post('/login', function (req, res) {
-  //send cookie
-  res.cookie('username', req.body.username);
-  res.redirect(`/urls`);
+//LOGIN PAGE
+app.get('/login', (req, res) => {
+  let templateVars = {
+    //username: req.cookies["username"],
+    user : users[req.cookies.userID]
+  };
+  res.render("urls_login", templateVars);
 })
 
+app.post('/login', function (req, res) {
+  //find a user that matches the email submitted via the login form
+  for (let user in users ) {
+    if (req.body.email === users[user].email &&
+        req.body.password === users[user].password) {
+          res.cookie('userID', user);
+          res.redirect(`/urls`);
+    }
+    else {
+      res.status(403).send('email or password incorrect');
+    }
+  }
+
+  //If a user with that e-mail cannot be found
+    //return a response with a 403 status code
+  //If a user with that e-mail address is located, AND
+  //if the password given in the form matches existing user's password
+      //set the user_id cookie with the matching user's random ID
+      //then redirect to /
+  //else it does not match,
+    //return a response with a 403 status code.
+
+  //send cookie
+})
+
+//LOGOUT
 app.post('/logout', function (req, res) {
   //clear username
   res.clearCookie('username');
   res.redirect(`/urls`);
 })
 
+//SHORT URL PAGE
 app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = urlDatabase[shortURL];
