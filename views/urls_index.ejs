@@ -32,7 +32,9 @@
 <body>
   <%- include('partials/_header') %>
   <% if( user ){ %>
-    <p>Hi <%= user.email %>!</p>
+    <h4>Hi <%= user.email %>!</h4>
+  <% } else { %>
+    <p>Please login!</p>
   <% } %>
 
   <ul>

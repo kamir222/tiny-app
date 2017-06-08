@@ -1,7 +1,8 @@
 "use strict";
 const express = require('express');
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 const app = express();
 const PORT  = process.env.PORT || 8080; //if there is preconfigured port choose that, otherwise choose 8080
 
@@ -72,8 +73,6 @@ app.get('/urls', (req, res) => {
     urls: urlDatabase,
     user : users[req.cookies.userID]
   };
-
-
   res.render("urls_index", templateVars);
 })
 
@@ -84,6 +83,18 @@ app.get('/urls/register', (req, res) => {
   };
   res.render("urls_form", templateVars);
 })
+
+//SHORT URL GENERATOR
+app.post("/urls", (req, res) => {
+  let longURL = req.body.longURL;
+  let shortURL = generateRandomString();
+  // add shortURL as key and longURL as value
+  if(!urlDatabase[req.cookies.userID]) {
+    urlDatabase[req.cookies.userID] = {}
+  }
+  urlDatabase[req.cookies.userID][shortURL] = longURL;
+  res.redirect(`/urls/${shortURL}`);
+});
 
 app.post('/urls/register', (req, res) => {
   // generate a random user ID
@@ -119,17 +130,6 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-//SHORT URL GENERATOR
-app.post("/urls", (req, res) => {
-  let longURL = req.body.longURL;
-  let shortURL = generateRandomString();
-  // add shortURL as key and longURL as value
-  if(!urlDatabase[req.cookies.userID]) {
-    urlDatabase[req.cookies.userID] = {}
-  }
-  urlDatabase[req.cookies.userID][shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
-});
 
 //LOGIN PAGE
 app.get('/login', (req, res) => {
