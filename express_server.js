@@ -3,17 +3,18 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
+const cookieSession = require('cookie-session');
 const app = express();
 const PORT  = process.env.PORT || 8080; //if there is preconfigured port choose that, otherwise choose 8080
 
 app.set('view engine', 'ejs') // tells express to use ejs as templating engine
 app.use(bodyParser.urlencoded({extended: true})); // turning data into object (attaches form data to req.body)
 app.use(cookieParser())
+app.use(cookieSession({
+  name: 'session',
+  keys: ['keyvatios']
+}))
 
-//Add a new userID (string) property to individual objects in urlDatabase.
-//It should just contain the user ID
-//(the key in the users collection)
-//and not a copy of the entire user data.
 let urlDatabase = {
   "userRandomID": {
     "b2xVn2": "http://www.lighthouselabs.ca",
@@ -29,12 +30,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    hashedPassword: "purple-monkey-dinosaur",
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    hashedPassword: "dishwasher-funk",
   }
 }
 
@@ -71,43 +72,45 @@ app.get('/url.json', (req, res) => {
 app.get('/urls', (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    user : users[req.cookies.userID]
+    user : users[req.session.userID]
   };
-  res.render("urls_index", templateVars);
-})
+  console.log(templateVars.user);
 
-//REGISTER FORM
-app.get('/urls/register', (req, res) => {
-  let templateVars = {
-    user : users[req.cookies.userID]
-  };
-  res.render("urls_form", templateVars);
+  res.render("urls_index", templateVars);
 })
 
 //SHORT URL GENERATOR
 app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
-  // add shortURL as key and longURL as value
-  if(!urlDatabase[req.cookies.userID]) {
-    urlDatabase[req.cookies.userID] = {}
+  if(!urlDatabase[req.session.userID]) {
+    urlDatabase[req.session.userID] = {}
   }
-  urlDatabase[req.cookies.userID][shortURL] = longURL;
+  urlDatabase[req.session.userID][shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
 });
+
+//REGISTER FORM
+app.get('/urls/register', (req, res) => {
+  let templateVars = {
+    user : users[req.session.userID]
+  };
+  res.render("urls_form", templateVars);
+})
 
 app.post('/urls/register', (req, res) => {
   // generate a random user ID
   let userID = generateRandomString();
   let userEmail = req.body.email;
   let userPassword = req.body.password;
+  let hashedPassword = bcrypt.hashSync(userPassword, 10);
 
   if (!userEmail && !userPassword) {
     res.status(400).send('URL not found.');
     return;
   }
 
-  for (var user in users) {
+  for (let user in users) {
     if (userEmail === users[user].email) {
       res.status(400).send('Email exists');
       return;
@@ -115,17 +118,17 @@ app.post('/urls/register', (req, res) => {
   }
 
   //add a new user object in the global users object:
-  users[userID] = {id: userID, email: userEmail, password: userPassword}
+  users[userID] = {id: userID, email: userEmail, hashedPassword: hashedPassword}
 
   //Set the cookie and redirect.
-  res.cookie('userID', userID);
+  req.session.userID = userID;
   res.redirect(`/urls`);
 })
 
 //NEW URL MAKER
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    user: users[req.cookies.userID]
+    user: users[req.session.userID]
   };
   res.render("urls_new", templateVars);
 });
@@ -134,31 +137,33 @@ app.get("/urls/new", (req, res) => {
 //LOGIN PAGE
 app.get('/login', (req, res) => {
   let templateVars = {
-    user : users[req.cookies.userID]
+    user : users[req.session.userID]
   };
   res.render("urls_login", templateVars);
 })
 
 app.post('/login', function (req, res) {
   //find a user that matches the email submitted via the login form
+  var correctPassword = false;
   for (let user in users ) {
-    if (req.body.email === users[user].email &&
-        req.body.password === users[user].password) {
+    if ((req.body.email === users[user].email) &&
+      bcrypt.compareSync(req.body.password, users[user].hashedPassword)) {
             //send cookie
-          res.cookie('userID', user);
-          res.redirect(`/urls`);
-    }
-    else {
-      res.status(403).send('email or password incorrect');
+          req.session.userID = userID;
+          correctPassword = true;
     }
   }
-
+  if (correctPassword) {
+      res.redirect(`/urls`);
+  } else {
+    res.status(403).send('email or password incorrect');
+  }
 })
 
 //LOGOUT
 app.post('/logout', function (req, res) {
   //clear username
-  res.clearCookie('userID');
+  res.session = null;
   res.redirect(`/urls`);
 })
 
@@ -179,8 +184,8 @@ app.get('/urls/:id', (req, res) => {
   let templateVars = {
       shortURL: urlId,
       longURL: fullUrl,
-      user : users[req.cookies.userID],
-      showEditControls: urlDatabase[req.cookies.userID] && urlDatabase[req.cookies.userID][urlId]
+      user : users[req.session.userID],
+      showEditControls: urlDatabase[req.session.userID] && urlDatabase[req.session.userID][urlId]
     };
   res.render("urls_show", templateVars);
 })
@@ -188,7 +193,7 @@ app.get('/urls/:id', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   // find url in database
   let urlId = req.params.id;
-  let fullUrl = urlDatabase[req.cookies.userID][urlId];
+  let fullUrl = urlDatabase[req.session.userID][urlId];
   let url = fullUrl;
 
   // if does not exist return a 404
@@ -201,7 +206,7 @@ app.post('/urls/:id', (req, res) => {
   let newUrl = req.body.url;
 
   if (fullUrl !== newUrl) {
-    urlDatabase[req.cookies.userID][urlId] = newUrl;
+    urlDatabase[req.session.userID][urlId] = newUrl;
   }
   res.redirect(`/urls/${urlId}`);
 })
@@ -209,7 +214,7 @@ app.post('/urls/:id', (req, res) => {
 app.post('/urls/:id/delete', (req, res) => {
   // find url in database
   let urlId = req.params.id;
-  let fullUrl = urlDatabase[req.cookies.userID][urlId];
+  let fullUrl = urlDatabase[req.session.userID][urlId];
   let url = fullUrl;
 
   // if url doesn'texist return a 404
@@ -219,7 +224,7 @@ app.post('/urls/:id/delete', (req, res) => {
    }
 
   // remove url from database
-  delete urlDatabase[req.cookies.userID][urlId];
+  delete urlDatabase[req.session.userID][urlId];
 
   res.redirect('/urls');
 })
