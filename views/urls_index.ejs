@@ -45,6 +45,10 @@
     </form>
     <% } %>
   </ul>
-  <a href="urls/new">link for shortening a new URL</a>
+  <% if( user ){ %>
+    <a href="urls/new">link for shortening a new URL</a>
+  <% } else { %>
+    <a href="/login">link for shortening a new URL</a>
+  <% } %>  
 </body>
 </html>
