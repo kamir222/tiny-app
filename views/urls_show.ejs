@@ -32,10 +32,12 @@
 <%- include('partials/_header') %>
   <ul>
     <li><%= shortURL %> <%= longURL %>
-      <form method="POST" action="/urls/<%= shortURL %>">
-        <input type="text" name="url" placeholder="<%= longURL %>">
-        <button type="submit">Update</button>
-      </form>
+      <% if (showEditControls) { %>
+        <form method="POST" action="/urls/<%= shortURL %>">
+          <input type="text" name="url" placeholder="<%= longURL %>">
+          <button type="submit">Update</button>
+        </form>
+      <% } %>
     </li>
   </ul>
 </body>

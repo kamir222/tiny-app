@@ -48,6 +48,16 @@ function generateRandomString () {
   return randomString;
 }
 
+function urlsWithoutUserID () {
+  let urls = {};
+  for (var userID in urlDatabase) {
+    for(var shortURL in urlDatabase[userID]) {
+      urls[shortURL] = urlDatabase[userID][shortURL]
+    }
+  }
+  return urls;
+}
+
 app.get('/', (req, res) => {
   res.end('Hello!');
 })
@@ -58,12 +68,6 @@ app.get('/url.json', (req, res) => {
 
 //INDEX PAGE
 app.get('/urls', (req, res) => {
-  var urls = {}
-  /*for (var userID in urlDatabase) {
-    for(var shortURL in urlDatabase[userID]) {
-      urls[shortURL] = urlDatabase[userID][shortURL]
-    }
-  }*/
   let templateVars = {
     urls: urlDatabase,
     user : users[req.cookies.userID]
@@ -120,6 +124,9 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   // add shortURL as key and longURL as value
+  if(!urlDatabase[req.cookies.userID]) {
+    urlDatabase[req.cookies.userID] = {}
+  }
   urlDatabase[req.cookies.userID][shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
 });
@@ -168,11 +175,12 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   let urlId = req.params.id;
-  let fullUrl = urlDatabase[urlId];
+  let fullUrl = urlsWithoutUserID()[urlId];
   let templateVars = {
       shortURL: urlId,
       longURL: fullUrl,
-      user : users[req.cookies.userID]
+      user : users[req.cookies.userID],
+      showEditControls: urlDatabase[req.cookies.userID] && urlDatabase[req.cookies.userID][urlId]
     };
   res.render("urls_show", templateVars);
 })
@@ -180,7 +188,7 @@ app.get('/urls/:id', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   // find url in database
   let urlId = req.params.id;
-  let fullUrl = urlDatabase[urlId];
+  let fullUrl = urlDatabase[req.cookies.userID][urlId];
   let url = fullUrl;
 
   // if does not exist return a 404
@@ -193,7 +201,7 @@ app.post('/urls/:id', (req, res) => {
   let newUrl = req.body.url;
 
   if (fullUrl !== newUrl) {
-    urlDatabase[urlId] = newUrl;
+    urlDatabase[req.cookies.userID][urlId] = newUrl;
   }
   res.redirect(`/urls/${urlId}`);
 })
@@ -201,7 +209,7 @@ app.post('/urls/:id', (req, res) => {
 app.post('/urls/:id/delete', (req, res) => {
   // find url in database
   let urlId = req.params.id;
-  let fullUrl = urlDatabase[urlId];
+  let fullUrl = urlDatabase[req.cookies.userID][urlId];
   let url = fullUrl;
 
   // if url doesn'texist return a 404
@@ -211,7 +219,7 @@ app.post('/urls/:id/delete', (req, res) => {
    }
 
   // remove url from database
-  delete urlDatabase[urlId];
+  delete urlDatabase[req.cookies.userID][urlId];
 
   res.redirect('/urls');
 })
