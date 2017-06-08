@@ -50,13 +50,17 @@ app.get('/urls', (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     username: req.cookies["username"],
+    //user : users[req.cookies['email']]
   };
+
+
   res.render("urls_index", templateVars);
 })
 
 app.get('/urls/register', (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    //username: req.cookies["username"],
+    user : users[req.cookies.userID]
   };
   res.render("urls_form", templateVars);
 })
@@ -75,22 +79,22 @@ app.post('/urls/register', (req, res) => {
   for (var user in users) {
     if (userEmail === users[user].email) {
       res.status(400).send('Email exists');
+      return;
     }
   }
 
   //add a new user object in the global users object:
   users[userID] = {id: userID, email: userEmail, password: userPassword}
 
-  console.log(users);
   //Set the cookie and redirect.
-  res.cookie('email', req.body.email);
-  res.cookie('password', req.body.password);
+  res.cookie('userID', userID);
   res.redirect(`/urls`);
 })
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-    username: req.cookies["username"],
+    //username: req.cookies["username"],
+    user: users[req.cookies.userID]
   };
   res.render("urls_new", templateVars);
 });
@@ -104,7 +108,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.post('/login', function (req, res) {
-  //set cookie
+  //send cookie
   res.cookie('username', req.body.username);
   res.redirect(`/urls`);
 })
@@ -131,7 +135,8 @@ app.get('/urls/:id', (req, res) => {
   let templateVars = {
       shortURL: urlId,
       longURL: fullUrl,
-      username: req.cookies["username"],
+      //username: req.cookies["username"],
+      user : users[req.cookies.userID]
     };
   res.render("urls_show", templateVars);
 })
