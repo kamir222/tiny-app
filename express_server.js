@@ -67,6 +67,17 @@ app.post('/urls/register', (req, res) => {
   let userEmail = req.body.email;
   let userPassword = req.body.password;
 
+  if (!userEmail && !userPassword) {
+    res.status(400).send('URL not found.');
+    return;
+  }
+
+  for (var user in users) {
+    if (userEmail === users[user].email) {
+      res.status(400).send('Email exists');
+    }
+  }
+
   //add a new user object in the global users object:
   users[userID] = {id: userID, email: userEmail, password: userPassword}
 
