@@ -31,6 +31,10 @@
 </head>
 <body>
   <%- include('partials/_header') %>
+  <% if( user ){ %>
+    <p>Hi <%= user.email %>!</p>
+  <% } %>
+
   <ul>
     <% for (key in urls ) { %>
     <form method="POST" action="/urls/<%= key %>/delete">

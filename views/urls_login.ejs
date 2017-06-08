@@ -33,6 +33,7 @@
   <%- include('partials/_header') %>
   <% if( user ){ %>
     <p>Hi <%= user.email %>!</p>
+
     <form method="POST" action="/logout">
       <button type="submit">Logout</button>
     </form>
