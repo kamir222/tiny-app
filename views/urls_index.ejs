@@ -36,19 +36,25 @@
   <% } %>
 
   <ul>
-    <% for (key in urls ) { %>
-    <form method="POST" action="/urls/<%= key %>/delete">
-      <li><%= key %> <%= urls[key] %>
-        <a href="/urls/<%= key %>">edit</a>
-        <button type="submit">Delete</button>
-      </li>
-    </form>
+    <% for (userID in urls) { %>
+      <% for (key in urls[userID] ) { %>
+      <form method="POST" action="/urls/<%= key %>/delete">
+        <li><%= key %> <%= urls[userID][key] %>
+          <% if (user && user.id === userID) { %>
+            <a href="/urls/<%= key %>">edit</a>
+            <button type="submit">Delete</button>
+          <% } %>
+        </li>
+      </form>
+      <% } %>
     <% } %>
   </ul>
+
   <% if( user ){ %>
     <a href="urls/new">link for shortening a new URL</a>
   <% } else { %>
     <a href="/login">link for shortening a new URL</a>
-  <% } %>  
+  <% } %>
+
 </body>
 </html>

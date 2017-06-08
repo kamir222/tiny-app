@@ -9,9 +9,19 @@ app.set('view engine', 'ejs') // tells express to use ejs as templating engine
 app.use(bodyParser.urlencoded({extended: true})); // turning data into object (attaches form data to req.body)
 app.use(cookieParser())
 
+//Add a new userID (string) property to individual objects in urlDatabase.
+//It should just contain the user ID
+//(the key in the users collection)
+//and not a copy of the entire user data.
 let urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "userRandomID": {
+    "b2xVn2": "http://www.lighthouselabs.ca",
+    "9sm5xK": "http://www.google.com"
+  },
+  "user2RandomID": {
+    "bqxVn2": "http://www.lighthouselabs.ca",
+    "9am5xK": "http://www.google.com"
+  }
 };
 
 const users = {
@@ -48,6 +58,12 @@ app.get('/url.json', (req, res) => {
 
 //INDEX PAGE
 app.get('/urls', (req, res) => {
+  var urls = {}
+  /*for (var userID in urlDatabase) {
+    for(var shortURL in urlDatabase[userID]) {
+      urls[shortURL] = urlDatabase[userID][shortURL]
+    }
+  }*/
   let templateVars = {
     urls: urlDatabase,
     user : users[req.cookies.userID]
@@ -104,7 +120,7 @@ app.post("/urls", (req, res) => {
   let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   // add shortURL as key and longURL as value
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[req.cookies.userID][shortURL] = longURL;
   res.redirect(`/urls/${shortURL}`);
 });
 
