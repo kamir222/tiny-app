@@ -41,6 +41,7 @@ function generateRandomString () {
 app.get('/', (req, res) => {
   res.end('Hello!');
 })
+
 app.get('/url.json', (req, res) => {
     res.json(urlDatabase);
 })
@@ -58,6 +59,22 @@ app.get('/urls/register', (req, res) => {
     username: req.cookies["username"],
   };
   res.render("urls_form", templateVars);
+})
+//IM HERE!!!!
+app.post('/urls/register', (req, res) => {
+  // generate a random user ID
+  let userID = generateRandomString();
+  let userEmail = req.body.email;
+  let userPassword = req.body.password;
+
+  //add a new user object in the global users object:
+  users[userID] = {id: userID, email: userEmail, password: userPassword}
+
+  console.log(users);
+  //Set the cookie and redirect.
+  res.cookie('email', req.body.email);
+  res.cookie('password', req.body.password);
+  res.redirect(`/urls`);
 })
 
 app.get("/urls/new", (req, res) => {
