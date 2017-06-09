@@ -22,7 +22,7 @@ let urlDatabase = {
   },
   "user2RandomID": {
     "bqxVn2": "https://www.reddit.com",
-    "9am5xK": "https://www.nytimes.com/"
+    "9am5xK": "https://www.nytimes.com"
   }
 };
 
