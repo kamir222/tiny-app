@@ -175,7 +175,7 @@ app.post('/logout', function (req, res) {
 //SHORT URL PAGE
 app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
-  let longURL = urlDatabase[shortURL];
+  let longURL = urlDatabase[req.session.userID][shortURL];
   if (longURL === undefined) {
     res.send(`non-existent url: ${shortURL}`);
   } else {
