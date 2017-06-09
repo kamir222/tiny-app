@@ -41,10 +41,10 @@ const users = {
 
 //  a function that produces a string of 6 random alphanumeric characters
 function generateRandomString () {
-  var randomString = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let randomString = "";
+  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  for(var i = 0; i < 6; i++)
+  for(let i = 0; i < 6; i++)
       randomString += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return randomString;
@@ -52,8 +52,8 @@ function generateRandomString () {
 
 function urlsWithoutUserID () {
   let urls = {};
-  for (var userID in urlDatabase) {
-    for(var shortURL in urlDatabase[userID]) {
+  for (let userID in urlDatabase) {
+    for(let shortURL in urlDatabase[userID]) {
       urls[shortURL] = urlDatabase[userID][shortURL]
     }
   }
@@ -74,7 +74,6 @@ app.get('/urls', (req, res) => {
     urls: urlDatabase,
     user : users[req.session.userID]
   };
-  console.log(templateVars.user);
 
   res.render("urls_index", templateVars);
 })
@@ -105,8 +104,9 @@ app.post('/urls/register', (req, res) => {
   let userPassword = req.body.password;
   let hashedPassword = bcrypt.hashSync(userPassword, 10);
 
-  if (!userEmail && !userPassword) {
-    res.status(400).send('URL not found.');
+  if (!userEmail || !userPassword) {
+    res.status(400).send('email or password is missing');
+    res.redirect(`/urls/register`);
     return;
   }
 
@@ -144,12 +144,12 @@ app.get('/login', (req, res) => {
 
 app.post('/login', function (req, res) {
   //find a user that matches the email submitted via the login form
-  var correctPassword = false;
+  let correctPassword = false;
   for (let user in users ) {
     if ((req.body.email === users[user].email) &&
       bcrypt.compareSync(req.body.password, users[user].hashedPassword)) {
             //send cookie
-          req.session.userID = userID;
+          req.session.userID = user;
           correctPassword = true;
     }
   }
@@ -160,10 +160,15 @@ app.post('/login', function (req, res) {
   }
 })
 
+app.get('/logout', function (req, res) {
+  req.session = null;
+  res.redirect(`/urls`);
+})
+
 //LOGOUT
 app.post('/logout', function (req, res) {
   //clear username
-  res.session = null;
+  req.session = null;
   res.redirect(`/urls`);
 })
 
