@@ -211,10 +211,10 @@ app.post('/urls/:id', (req, res) => {
      return;
    }
 
-  // update name on url
+  // update url
   let newUrl = req.body.url;
 
-  if (fullUrl !== newUrl) {
+  if (fullUrl !== newUrl && newUrl !== '') {
     urlDatabase[req.session.userID][urlId] = newUrl;
   }
   res.redirect(`/urls/${urlId}`);
