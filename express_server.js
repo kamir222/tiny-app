@@ -160,12 +160,12 @@ app.post('/login', function (req, res) {
   }
 })
 
+//LOGOUT
 app.get('/logout', function (req, res) {
   req.session = null;
   res.redirect(`/urls`);
 })
 
-//LOGOUT
 app.post('/logout', function (req, res) {
   //clear username
   req.session = null;
