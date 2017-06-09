@@ -21,8 +21,8 @@ let urlDatabase = {
     "9sm5xK": "http://www.google.com"
   },
   "user2RandomID": {
-    "bqxVn2": "http://www.lighthouselabs.ca",
-    "9am5xK": "http://www.google.com"
+    "bqxVn2": "https://www.reddit.com",
+    "9am5xK": "https://www.nytimes.com/"
   }
 };
 
@@ -184,13 +184,8 @@ app.get("/u/:shortURL", (req, res) => {
     } else {
       res.redirect('http://'+longURL);
     }
-
   }
 });
-
-
-
-
 
 app.get('/urls/:id', (req, res) => {
   let urlId = req.params.id;
