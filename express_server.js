@@ -179,9 +179,18 @@ app.get("/u/:shortURL", (req, res) => {
   if (longURL === undefined) {
     res.send(`non-existent url: ${shortURL}`);
   } else {
-    res.redirect(longURL);
+    if (/^http:\/\//.test(longURL)) {
+        res.redirect(longURL);
+    } else {
+      res.redirect('http://'+longURL);
+    }
+
   }
 });
+
+
+
+
 
 app.get('/urls/:id', (req, res) => {
   let urlId = req.params.id;
