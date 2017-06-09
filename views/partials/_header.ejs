@@ -1,8 +1,16 @@
 <div class="header">
   <h1>TinyApp</h1>
-
-  <a class='header_link' href="/login">LOGIN |</a>
-  <a class='header_link' href='/urls/register'>REGISTER |</a>
-  <a class='header_link' href='/logout'>LOGOUT |</a>
-  <a class='header_link' href='/urls'>HOME</a>
+  <% if( user ){ %>
+    <a class='header_link' href='/logout'>LOGOUT |</a>
+    <a class='header_link' href='/urls'>HOME</a>
+  <% } else { %>
+    <a class='header_link' href="/login">LOGIN |</a>
+    <a class='header_link' href='/urls/register'>REGISTER |</a>
+    <a class='header_link' href='/urls'>HOME</a>
+    <% } %>
+  <% if( user ){ %>
+    <h4>Hi <%= user.email %>!</h4>
+  <% } else { %>
+    <p>Please login!</p>
+  <% } %>
 </div>

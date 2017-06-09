@@ -33,11 +33,6 @@
 </head>
 <body>
   <%- include('partials/_header') %>
-  <% if( user ){ %>
-    <h4>Hi <%= user.email %>!</h4>
-  <% } else { %>
-    <p>Please login!</p>
-  <% } %>
 
   <ul>
     <% for (userID in urls) { %>

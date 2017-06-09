@@ -105,7 +105,7 @@ app.post('/urls/register', (req, res) => {
   let hashedPassword = bcrypt.hashSync(userPassword, 10);
 
   if (!userEmail || !userPassword) {
-    res.status(400).send('email or password is missing');
+    res.status(400).send('email or password is missing or incorrect');
     res.redirect(`/urls/register`);
     return;
   }
@@ -113,6 +113,7 @@ app.post('/urls/register', (req, res) => {
   for (let user in users) {
     if (userEmail === users[user].email) {
       res.status(400).send('Email exists');
+      res.redirect(`/urls/register`);
       return;
     }
   }
@@ -226,7 +227,7 @@ app.post('/urls/:id/delete', (req, res) => {
   let fullUrl = urlDatabase[req.session.userID][urlId];
   let url = fullUrl;
 
-  // if url doesn'texist return a 404
+  // if url doesn't exist return a 404
    if (!url) {
      res.status(404).send('URL not found.');
      return;
